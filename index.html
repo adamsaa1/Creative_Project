@@ -1,0 +1,1394 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>De Facto vs. De Jure</title>
+    <style>
+      :root {
+        --bg: #f4efe7;
+        --surface: rgba(255, 250, 242, 0.84);
+        --surface-strong: rgba(255, 249, 240, 0.94);
+        --ink: #1a1612;
+        --muted: #65584a;
+        --line: rgba(44, 35, 24, 0.12);
+        --accent: #8c2f1b;
+        --accent-soft: rgba(140, 47, 27, 0.12);
+        --accent-2: #1c4a5a;
+        --shadow: 0 30px 80px rgba(48, 35, 20, 0.14);
+        --radius-xl: 32px;
+        --radius-lg: 22px;
+        --radius-md: 16px;
+        --max-width: 1180px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        color: var(--ink);
+        font-family: "Avenir Next", "Segoe UI", sans-serif;
+        background:
+          radial-gradient(circle at top left, rgba(28, 74, 90, 0.14), transparent 33%),
+          radial-gradient(circle at right 18%, rgba(140, 47, 27, 0.16), transparent 28%),
+          linear-gradient(180deg, #f8f1e7 0%, #f2ece1 52%, #ece5d8 100%);
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        opacity: 0.2;
+        background-image:
+          linear-gradient(rgba(26, 22, 18, 0.045) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(26, 22, 18, 0.045) 1px, transparent 1px);
+        background-size: 44px 44px;
+        mask-image: linear-gradient(180deg, transparent 0%, black 16%, black 84%, transparent 100%);
+      }
+
+      .shell {
+        position: relative;
+        width: min(calc(100% - 2rem), var(--max-width));
+        margin: 0 auto;
+        padding: 28px 0 44px;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 20px;
+      }
+
+      .eyebrow {
+        font-size: 0.82rem;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--accent);
+        font-weight: 700;
+      }
+
+      .brand {
+        max-width: 480px;
+      }
+
+      .brand h1 {
+        margin: 0.2rem 0 0;
+        font-family: Baskerville, "Times New Roman", serif;
+        font-size: clamp(2rem, 5vw, 4rem);
+        line-height: 0.95;
+        font-weight: 600;
+      }
+
+      .brand p {
+        margin: 0.75rem 0 0;
+        color: var(--muted);
+        max-width: 36rem;
+        line-height: 1.55;
+      }
+
+      .status {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        padding: 0.95rem 1.2rem;
+        border-radius: 999px;
+        background: rgba(255, 252, 247, 0.72);
+        border: 1px solid var(--line);
+        backdrop-filter: blur(14px);
+      }
+
+      .status strong {
+        display: block;
+        font-size: 0.9rem;
+      }
+
+      .status span {
+        display: block;
+        color: var(--muted);
+        font-size: 0.82rem;
+      }
+
+      .dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--accent), #d87b53);
+        box-shadow: 0 0 0 8px rgba(140, 47, 27, 0.08);
+      }
+
+      .progress-wrap {
+        display: grid;
+        gap: 0.7rem;
+        margin-bottom: 20px;
+      }
+
+      .progress-labels {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
+
+      .progress-track {
+        width: 100%;
+        height: 12px;
+        border-radius: 999px;
+        background: rgba(26, 22, 18, 0.08);
+        overflow: hidden;
+      }
+
+      .progress-bar {
+        height: 100%;
+        width: 0;
+        border-radius: inherit;
+        background: linear-gradient(90deg, var(--accent-2), var(--accent));
+        transition: width 320ms ease;
+      }
+
+      .stage {
+        position: relative;
+        overflow: hidden;
+        min-height: 72vh;
+        border-radius: var(--radius-xl);
+        border: 1px solid rgba(44, 35, 24, 0.1);
+        background:
+          linear-gradient(180deg, rgba(255, 253, 248, 0.9), rgba(250, 245, 236, 0.92)),
+          rgba(255, 255, 255, 0.65);
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(12px);
+      }
+
+      .stage::after {
+        content: "";
+        position: absolute;
+        inset: auto -12% -34% auto;
+        width: 360px;
+        height: 360px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(28, 74, 90, 0.15), transparent 68%);
+        pointer-events: none;
+      }
+
+      .panel {
+        display: none;
+        min-height: 72vh;
+        padding: clamp(1.4rem, 2.8vw, 2.4rem);
+        animation: rise 420ms ease;
+      }
+
+      .panel.active {
+        display: block;
+      }
+
+      @keyframes rise {
+        from {
+          opacity: 0;
+          transform: translateY(16px);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .hero-grid,
+      .history-grid,
+      .results-layout {
+        display: grid;
+        gap: 1.5rem;
+      }
+
+      .hero-grid {
+        grid-template-columns: 1.1fr 1.4fr;
+        align-items: stretch;
+      }
+
+      .intro-card,
+      .video-card,
+      .history-card,
+      .prompt-card,
+      .result-card,
+      .summary-card {
+        position: relative;
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--line);
+        background: var(--surface);
+        padding: clamp(1.2rem, 2vw, 1.8rem);
+        backdrop-filter: blur(10px);
+      }
+
+      .intro-card {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        background:
+          linear-gradient(145deg, rgba(28, 74, 90, 0.12), rgba(255, 250, 242, 0.86)),
+          var(--surface);
+      }
+
+      .intro-card h2,
+      .history-panel h2,
+      .question-header h2,
+      .result-header h2 {
+        margin: 0;
+        font-family: Baskerville, "Times New Roman", serif;
+        font-size: clamp(2rem, 4vw, 3.3rem);
+        line-height: 1;
+        font-weight: 600;
+      }
+
+      .lede {
+        font-size: 1.08rem;
+        line-height: 1.7;
+        color: var(--muted);
+      }
+
+      .pull-quote {
+        margin-top: 1.5rem;
+        padding: 1.1rem 1.2rem;
+        border-left: 3px solid var(--accent);
+        background: rgba(255, 248, 240, 0.72);
+        color: #3d3126;
+        line-height: 1.65;
+      }
+
+      .stats-strip {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.85rem;
+        margin-top: 1.5rem;
+      }
+
+      .mini-stat {
+        padding: 1rem;
+        border-radius: var(--radius-md);
+        background: rgba(255, 252, 248, 0.92);
+        border: 1px solid rgba(44, 35, 24, 0.08);
+      }
+
+      .mini-stat strong {
+        display: block;
+        font-size: 1.4rem;
+        font-family: Baskerville, "Times New Roman", serif;
+      }
+
+      .mini-stat span {
+        display: block;
+        margin-top: 0.3rem;
+        color: var(--muted);
+        line-height: 1.45;
+        font-size: 0.92rem;
+      }
+
+      .video-card {
+        padding: 0;
+        overflow: hidden;
+        min-height: 420px;
+        background:
+          linear-gradient(180deg, rgba(14, 24, 32, 0.95), rgba(35, 23, 16, 0.88));
+      }
+
+      .video-frame {
+        width: 100%;
+        height: 100%;
+        min-height: 420px;
+        border: 0;
+      }
+
+      .section-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+        margin-bottom: 1rem;
+        padding: 0.45rem 0.8rem;
+        border-radius: 999px;
+        background: var(--accent-soft);
+        color: var(--accent);
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        font-size: 0.78rem;
+      }
+
+      .history-grid {
+        grid-template-columns: 0.9fr 1.1fr;
+        align-items: start;
+      }
+
+      .history-panel p {
+        color: var(--muted);
+        line-height: 1.7;
+        font-size: 1.03rem;
+      }
+
+      .history-stack {
+        display: grid;
+        gap: 1rem;
+      }
+
+      .history-card {
+        padding: 1.3rem;
+      }
+
+      .history-card h3 {
+        margin: 0 0 0.55rem;
+        font-size: 1.1rem;
+        letter-spacing: 0.02em;
+      }
+
+      .history-card p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.62;
+      }
+
+      .history-number {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2rem;
+        height: 2rem;
+        margin-bottom: 0.75rem;
+        border-radius: 50%;
+        background: rgba(28, 74, 90, 0.1);
+        color: var(--accent-2);
+        font-weight: 700;
+      }
+
+      .question-shell {
+        display: grid;
+        gap: 1.35rem;
+      }
+
+      .question-topline {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        align-items: end;
+      }
+
+      .question-index {
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+
+      .prompt-card {
+        background:
+          linear-gradient(180deg, rgba(255, 253, 249, 0.94), rgba(250, 244, 236, 0.96));
+      }
+
+      .question-body {
+        display: grid;
+        grid-template-columns: 1.2fr 0.95fr;
+        gap: 1.25rem;
+        align-items: start;
+      }
+
+      .context-text p {
+        color: var(--muted);
+        line-height: 1.72;
+        margin: 0;
+        font-size: 1.04rem;
+      }
+
+      .fact-chip {
+        display: inline-flex;
+        align-items: center;
+        margin-top: 1rem;
+        padding: 0.55rem 0.9rem;
+        border-radius: 999px;
+        background: rgba(28, 74, 90, 0.08);
+        color: var(--accent-2);
+        font-size: 0.85rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .answer-grid {
+        display: grid;
+        gap: 1rem;
+      }
+
+      .answer-card {
+        padding: 1rem;
+        border-radius: var(--radius-md);
+        border: 1px solid rgba(44, 35, 24, 0.08);
+        background: rgba(255, 252, 246, 0.88);
+      }
+
+      .answer-card label {
+        display: block;
+        margin-bottom: 0.55rem;
+        font-weight: 700;
+      }
+
+      .answer-card small {
+        display: block;
+        margin-bottom: 0.9rem;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+
+      .answer-card input {
+        width: 100%;
+        padding: 0.95rem 1rem;
+        border-radius: 14px;
+        border: 1px solid rgba(44, 35, 24, 0.16);
+        background: rgba(255, 255, 255, 0.9);
+        font: inherit;
+        color: var(--ink);
+        transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+      }
+
+      .answer-card input:focus {
+        outline: none;
+        border-color: rgba(28, 74, 90, 0.46);
+        box-shadow: 0 0 0 4px rgba(28, 74, 90, 0.1);
+        transform: translateY(-1px);
+      }
+
+      .unit {
+        color: var(--accent);
+        font-size: 0.82rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-weight: 700;
+      }
+
+      .results-layout {
+        grid-template-columns: 0.9fr 1.1fr;
+        align-items: start;
+      }
+
+      .summary-card {
+        position: sticky;
+        top: 20px;
+        background:
+          linear-gradient(160deg, rgba(28, 74, 90, 0.12), rgba(255, 250, 242, 0.92));
+      }
+
+      .summary-card p {
+        color: var(--muted);
+        line-height: 1.7;
+      }
+
+      .score-pill {
+        display: inline-flex;
+        align-items: baseline;
+        gap: 0.5rem;
+        padding: 0.8rem 1rem;
+        border-radius: 999px;
+        background: rgba(255, 252, 247, 0.96);
+        border: 1px solid rgba(44, 35, 24, 0.08);
+      }
+
+      .score-pill strong {
+        font-family: Baskerville, "Times New Roman", serif;
+        font-size: 2rem;
+        line-height: 1;
+      }
+
+      .score-pill span {
+        color: var(--muted);
+      }
+
+      .result-card {
+        display: grid;
+        gap: 1.1rem;
+        background: var(--surface-strong);
+      }
+
+      .result-metrics {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.9rem;
+      }
+
+      .metric {
+        padding: 1rem;
+        border-radius: var(--radius-md);
+        background: rgba(255, 252, 247, 0.96);
+        border: 1px solid rgba(44, 35, 24, 0.08);
+      }
+
+      .metric span {
+        display: block;
+        color: var(--muted);
+        font-size: 0.84rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      .metric strong {
+        display: block;
+        margin-top: 0.4rem;
+        font-family: Baskerville, "Times New Roman", serif;
+        font-size: 1.8rem;
+      }
+
+      .chart-wrap {
+        display: grid;
+        gap: 0.95rem;
+      }
+
+      .chart-title {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .chart-title h3 {
+        margin: 0;
+        font-size: 1.05rem;
+      }
+
+      .scale-note {
+        color: var(--muted);
+        font-size: 0.85rem;
+      }
+
+      .chart {
+        display: grid;
+        gap: 0.8rem;
+      }
+
+      .chart-row {
+        display: grid;
+        gap: 0.45rem;
+      }
+
+      .chart-row header {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        align-items: center;
+        font-size: 0.94rem;
+      }
+
+      .chart-row strong {
+        font-size: 1rem;
+      }
+
+      .chart-track {
+        position: relative;
+        height: 20px;
+        border-radius: 999px;
+        background: rgba(26, 22, 18, 0.08);
+        overflow: hidden;
+      }
+
+      .bar {
+        position: absolute;
+        inset: 0 auto 0 0;
+        width: 0;
+        border-radius: inherit;
+        transition: width 600ms cubic-bezier(0.22, 1, 0.36, 1);
+      }
+
+      .bar.guess {
+        background: linear-gradient(90deg, #d9a25f, #e1be78);
+      }
+
+      .bar.actual {
+        background: linear-gradient(90deg, var(--accent-2), #4d8192);
+        opacity: 0.94;
+      }
+
+      .gap-text {
+        margin: 0;
+        padding: 1rem 1.1rem;
+        border-radius: var(--radius-md);
+        background: rgba(140, 47, 27, 0.08);
+        color: #4a372b;
+        line-height: 1.65;
+      }
+
+      .result-nav {
+        display: flex;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+      }
+
+      .result-dot {
+        border: 0;
+        border-radius: 999px;
+        padding: 0.6rem 0.85rem;
+        background: rgba(26, 22, 18, 0.08);
+        color: var(--muted);
+        font: inherit;
+        cursor: pointer;
+        transition: background 180ms ease, color 180ms ease, transform 180ms ease;
+      }
+
+      .result-dot.active,
+      .result-dot:hover {
+        background: rgba(28, 74, 90, 0.14);
+        color: var(--accent-2);
+        transform: translateY(-1px);
+      }
+
+      .nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 20px;
+      }
+
+      .nav-group {
+        display: flex;
+        gap: 0.8rem;
+        align-items: center;
+      }
+
+      button {
+        border: 0;
+        border-radius: 999px;
+        padding: 0.95rem 1.35rem;
+        font: inherit;
+        font-weight: 700;
+        cursor: pointer;
+        transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease, opacity 180ms ease;
+      }
+
+      button:hover:not(:disabled) {
+        transform: translateY(-1px);
+      }
+
+      button:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+
+      .btn-secondary {
+        background: rgba(255, 251, 245, 0.88);
+        color: var(--ink);
+        border: 1px solid rgba(44, 35, 24, 0.12);
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, var(--accent-2), var(--accent));
+        color: #fffaf4;
+        box-shadow: 0 18px 36px rgba(28, 74, 90, 0.22);
+      }
+
+      .nav-note {
+        color: var(--muted);
+        font-size: 0.94rem;
+      }
+
+      .footnote {
+        margin-top: 1rem;
+        color: var(--muted);
+        font-size: 0.84rem;
+        line-height: 1.55;
+      }
+
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+
+      @media (max-width: 920px) {
+        .topbar,
+        .hero-grid,
+        .history-grid,
+        .question-body,
+        .results-layout {
+          grid-template-columns: 1fr;
+        }
+
+        .stats-strip,
+        .result-metrics {
+          grid-template-columns: 1fr;
+        }
+
+        .summary-card {
+          position: static;
+        }
+
+        .status {
+          justify-content: flex-start;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .shell {
+          width: min(calc(100% - 1rem), var(--max-width));
+          padding-top: 16px;
+        }
+
+        .panel {
+          padding: 1rem;
+        }
+
+        .nav {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .nav-group {
+          justify-content: space-between;
+        }
+
+        button {
+          flex: 1;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar">
+        <div class="brand">
+          <span class="eyebrow">Interactive History Experience</span>
+          <h1>De Facto vs. De Jure</h1>
+          <p>
+            A guided look at how legally enforced racism shaped education, and how many of those harms
+            persisted long after the law changed.
+          </p>
+        </div>
+        <div class="status" aria-live="polite">
+          <span class="dot" aria-hidden="true"></span>
+          <div>
+            <strong id="stage-name">Opening</strong>
+            <span id="stage-detail">Watch the introduction and begin the experience</span>
+          </div>
+        </div>
+      </header>
+
+      <section class="progress-wrap" aria-label="Experience progress">
+        <div class="progress-labels">
+          <span id="progress-copy">Step 1 of 10</span>
+          <span id="question-copy">0 of 7 estimates completed</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-bar" id="progress-bar"></div>
+        </div>
+      </section>
+
+      <section class="stage">
+        <article class="panel active" data-step-type="intro" aria-label="Introduction">
+          <div class="hero-grid">
+            <div class="intro-card">
+              <div>
+                <span class="section-tag">Part I · The Fight for Freedom</span>
+                <h2>Begin with the story before the numbers.</h2>
+                <p class="lede">
+                  This project starts with history, not trivia. Watch the video, then continue into the
+                  policies that limited opportunity for Black Americans long after slavery ended.
+                </p>
+                <div class="pull-quote">
+                  The central question of this site is not only what the law once required, but what
+                  inequality kept doing after explicit legal segregation was challenged.
+                </div>
+              </div>
+
+              <div class="stats-strip">
+                <div class="mini-stat">
+                  <strong>1 video</strong>
+                  <span>Context for the civil rights struggle and the pursuit of freedom</span>
+                </div>
+                <div class="mini-stat">
+                  <strong>3 systems</strong>
+                  <span>Historic mechanisms that constrained education and power</span>
+                </div>
+                <div class="mini-stat">
+                  <strong>7 prompts</strong>
+                  <span>Your estimates versus the real outcomes across generations</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="video-card">
+              <iframe
+                class="video-frame"
+                src="https://www.youtube.com/embed/9ppTiyxFSs0?rel=0"
+                title="History of the fight for freedom"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerpolicy="strict-origin-when-cross-origin"
+                allowfullscreen
+              ></iframe>
+            </div>
+          </div>
+        </article>
+
+        <article class="panel" data-step-type="history" aria-label="Historical mechanisms">
+          <div class="history-grid">
+            <div class="history-panel">
+              <span class="section-tag">Part II · Systems of Exclusion</span>
+              <h2>Three mechanisms that blocked educational opportunity.</h2>
+              <p>
+                These were not isolated unfair acts. They were systems that shaped where families could live,
+                how communities could influence policy, and which schools received resources.
+              </p>
+              <p>
+                Taken together, they help explain why unequal education could survive even when the language of
+                equality had entered American law.
+              </p>
+              <p class="footnote">
+                The next section asks visitors to estimate long-run outcomes. The goal is to make visible how
+                much inequality endured, even after many people assume the biggest barriers had already fallen.
+              </p>
+            </div>
+
+            <div class="history-stack">
+              <section class="history-card">
+                <span class="history-number">1</span>
+                <h3>Jim Crow laws</h3>
+                <p>
+                  Jim Crow was the system of state and local laws that enforced racial segregation across the
+                  South. In education, it meant Black children were pushed into separate schools that were often
+                  dramatically underfunded, overcrowded, and denied the facilities, materials, and political
+                  support available to White schools.
+                </p>
+              </section>
+
+              <section class="history-card">
+                <span class="history-number">2</span>
+                <h3>Redlining</h3>
+                <p>
+                  Redlining blocked many Black families from buying homes in neighborhoods with stronger tax
+                  bases and better-funded schools. Because public education was deeply tied to housing patterns
+                  and local wealth, residential exclusion translated into fewer educational opportunities and
+                  weaker long-term school funding.
+                </p>
+              </section>
+
+              <section class="history-card">
+                <span class="history-number">3</span>
+                <h3>Black disenfranchisement and voter suppression</h3>
+                <p>
+                  Poll taxes, literacy tests, intimidation, and other disfranchising laws weakened Black
+                  political power across the South. That meant Black communities had far less ability to shape
+                  school boards, challenge unequal funding, or influence state education policy, allowing
+                  inequities to persist for decades.
+                </p>
+              </section>
+            </div>
+          </div>
+        </article>
+
+        <article class="panel" data-step-type="question" aria-label="Question 1">
+          <div class="question-shell">
+            <div class="question-topline">
+              <div class="question-header">
+                <span class="section-tag">Part III · Estimating The Present</span>
+                <h2 id="question-title">Black homeownership</h2>
+              </div>
+              <div class="question-index" id="question-index">Question 1 of 7</div>
+            </div>
+
+            <div class="prompt-card">
+              <div class="question-body">
+                <div class="context-text">
+                  <p id="question-context"></p>
+                  <span class="fact-chip" id="question-theme">Wealth and housing</span>
+                </div>
+
+                <div class="answer-grid" id="answer-grid"></div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="panel" data-step-type="results" aria-label="Results">
+          <div class="results-layout">
+            <aside class="summary-card">
+              <span class="section-tag">Part IV · What The Data Shows</span>
+              <h2>Your estimates next to reality.</h2>
+              <p>
+                These cards compare your guesses with the actual figures. The point is not to score a test. It
+                is to show how easy it is to underestimate how durable racial inequality has been over time.
+              </p>
+              <div class="score-pill">
+                <strong id="average-gap">0.0</strong>
+                <span>average absolute error across all prompts</span>
+              </div>
+              <p class="footnote">
+                Percentage-based questions are charted on a 0 to 100 scale. The home value ratio uses a 0 to 5
+                times scale because it is measured as a multiplier rather than a percentage.
+              </p>
+              <p class="footnote">
+                Source trail for the figures used here: Treasury, UCLA Civil Rights Project, National Archives,
+                and the historical education and segregation figures you provided for the experience.
+              </p>
+              <div class="result-nav" id="result-nav"></div>
+            </aside>
+
+            <section class="result-card" aria-live="polite">
+              <div class="result-header">
+                <span class="section-tag" id="result-tag">Results</span>
+                <h2 id="result-title"></h2>
+              </div>
+
+              <p class="gap-text" id="result-message"></p>
+
+              <div class="result-metrics" id="result-metrics"></div>
+
+              <div class="chart-wrap">
+                <div class="chart-title">
+                  <h3>Guess versus reality</h3>
+                  <span class="scale-note" id="scale-note"></span>
+                </div>
+                <div class="chart" id="result-chart"></div>
+              </div>
+            </section>
+          </div>
+        </article>
+      </section>
+
+      <nav class="nav">
+        <div class="nav-note" id="nav-note">
+          Watch, read, and then make your estimates before you reach the data.
+        </div>
+        <div class="nav-group">
+          <button class="btn-secondary" id="back-btn" type="button">Back</button>
+          <button class="btn-primary" id="next-btn" type="button">Next</button>
+        </div>
+      </nav>
+    </main>
+
+    <script>
+      const questions = [
+        {
+          title: "Black homeownership",
+          tag: "Wealth and housing",
+          context:
+            "Black homeownership was about 42% in 1970 and about 44% in 2022. That tiny change across half a century matters because homeownership is one of the main ways families build wealth, move into opportunity-rich neighborhoods, and access stronger school systems.",
+          inputs: [
+            { label: "What do you think it was in 1970?", key: "1970", unit: "%" },
+            { label: "What do you think it is today?", key: "2022", unit: "%" }
+          ],
+          actual: [42, 44],
+          scaleMax: 100,
+          scaleLabel: "0 to 100 percent"
+        },
+        {
+          title: "Home value gap",
+          tag: "Family wealth",
+          context:
+            "Treasury reports that the average White household's home value is 2.5 times the average Black household's home value today, and that this is the same ratio as in 1970. One of the most important wealth gaps in the country barely moved.",
+          inputs: [
+            { label: "How many times higher do you think it was in 1970?", key: "1970", unit: "x" },
+            { label: "How many times higher do you think it is today?", key: "Today", unit: "x" }
+          ],
+          actual: [2.5, 2.5],
+          scaleMax: 5,
+          scaleLabel: "0 to 5 times"
+        },
+        {
+          title: "Black students in majority-White schools in the South",
+          tag: "School integration",
+          context:
+            "In the South, the share of Black students in majority-White schools reached about 43% in the 1980s but fell to about 16% by 2021. This is one of the clearest examples of formal desegregation giving way to new patterns of separation.",
+          inputs: [
+            { label: "What do you think the share was in the 1980s?", key: "1980s", unit: "%" },
+            { label: "What do you think it was in 2021?", key: "2021", unit: "%" }
+          ],
+          actual: [43, 16],
+          scaleMax: 100,
+          scaleLabel: "0 to 100 percent"
+        },
+        {
+          title: "Schools with more than 90% students of color",
+          tag: "Concentrated segregation",
+          context:
+            "The share of U.S. public schools with more than 90% students of color rose from 7.4% in 1988 to 19.8% in 2021. That rise points to a country where racial concentration in schools deepened rather than disappeared.",
+          inputs: [
+            { label: "What do you think the share was in 1988?", key: "1988", unit: "%" },
+            { label: "What do you think it was in 2021?", key: "2021", unit: "%" }
+          ],
+          actual: [7.4, 19.8],
+          scaleMax: 100,
+          scaleLabel: "0 to 100 percent"
+        },
+        {
+          title: "California's intensely segregated schools",
+          tag: "State-level segregation",
+          context:
+            "UCLA reports that California's share of intensely segregated schools rose from 11% in 1988 to 44% in 2021. It is a brutal state-level reminder that segregation did not simply vanish once explicit Jim Crow laws were struck down.",
+          inputs: [
+            { label: "What do you think the share was in 1988?", key: "1988", unit: "%" },
+            { label: "What do you think it was in 2021?", key: "2021", unit: "%" }
+          ],
+          actual: [11, 44],
+          scaleMax: 100,
+          scaleLabel: "0 to 100 percent"
+        },
+        {
+          title: "White share of the typical Black student's school",
+          tag: "Everyday school experience",
+          context:
+            "The typical Black student attended a school with 34.7% White students in 1990, but only 24.5% White students in 2021. In other words, everyday classroom exposure became more racially isolated over time.",
+          inputs: [
+            { label: "What do you think it was in 1990?", key: "1990", unit: "%" },
+            { label: "What do you think it was in 2021?", key: "2021", unit: "%" }
+          ],
+          actual: [34.7, 24.5],
+          scaleMax: 100,
+          scaleLabel: "0 to 100 percent"
+        },
+        {
+          title: "Bachelor's degree attainment gap",
+          tag: "Higher education",
+          context:
+            "Among 25 to 29 year olds, the White-Black bachelor's attainment gap was 7.3 percentage points in 1970 and 17.2 points in 2022. Even as college attainment rose overall, the racial gap widened substantially.",
+          inputs: [
+            { label: "What do you think the gap was in 1970?", key: "1970", unit: "pts" },
+            { label: "What do you think the gap was in 2022?", key: "2022", unit: "pts" }
+          ],
+          actual: [7.3, 17.2],
+          scaleMax: 100,
+          scaleLabel: "0 to 100 percentage points"
+        }
+      ];
+
+      const steps = [
+        {
+          type: "intro",
+          name: "Opening",
+          detail: "Watch the introduction and begin the experience",
+          note: "Watch, read, and then make your estimates before you reach the data."
+        },
+        {
+          type: "history",
+          name: "Historical Context",
+          detail: "See the systems that blocked Black educational opportunity",
+          note: "The next section asks visitors to estimate long-run outcomes for themselves."
+        },
+        ...questions.map((question, index) => ({
+          type: "question",
+          name: `Question ${index + 1}`,
+          detail: question.title,
+          note: "Enter your best estimate for each year before moving on."
+        })),
+        {
+          type: "results",
+          name: "Results",
+          detail: "Compare your estimates to the historical record",
+          note: "Use the result buttons to move through each question again."
+        }
+      ];
+
+      const panels = document.querySelectorAll(".panel");
+      const stageName = document.getElementById("stage-name");
+      const stageDetail = document.getElementById("stage-detail");
+      const progressCopy = document.getElementById("progress-copy");
+      const questionCopy = document.getElementById("question-copy");
+      const progressBar = document.getElementById("progress-bar");
+      const navNote = document.getElementById("nav-note");
+      const backBtn = document.getElementById("back-btn");
+      const nextBtn = document.getElementById("next-btn");
+
+      const questionTitle = document.getElementById("question-title");
+      const questionIndex = document.getElementById("question-index");
+      const questionContext = document.getElementById("question-context");
+      const questionTheme = document.getElementById("question-theme");
+      const answerGrid = document.getElementById("answer-grid");
+
+      const averageGap = document.getElementById("average-gap");
+      const resultNav = document.getElementById("result-nav");
+      const resultTag = document.getElementById("result-tag");
+      const resultTitle = document.getElementById("result-title");
+      const resultMessage = document.getElementById("result-message");
+      const resultMetrics = document.getElementById("result-metrics");
+      const resultChart = document.getElementById("result-chart");
+      const scaleNote = document.getElementById("scale-note");
+
+      let currentStep = 0;
+      let currentResult = 0;
+
+      const answers = questions.map((question) => question.actual.map(() => ""));
+
+      function clamp(value, min, max) {
+        return Math.min(Math.max(value, min), max);
+      }
+
+      function formatValue(value, unit) {
+        if (unit === "x") {
+          return `${Number(value).toFixed(1)}x`;
+        }
+
+        if (Number.isInteger(Number(value))) {
+          return `${Number(value)}${unit === "%" ? "%" : ` ${unit}`}`;
+        }
+
+        return `${Number(value).toFixed(1)}${unit === "%" ? "%" : ` ${unit}`}`;
+      }
+
+      function getCompletedEstimates() {
+        return answers.flat().filter((value) => value !== "").length;
+      }
+
+      function renderQuestion(questionNumber) {
+        const question = questions[questionNumber];
+        questionTitle.textContent = question.title;
+        questionIndex.textContent = `Question ${questionNumber + 1} of ${questions.length}`;
+        questionContext.textContent = question.context;
+        questionTheme.textContent = question.tag;
+        answerGrid.innerHTML = "";
+
+        question.inputs.forEach((inputConfig, inputIndex) => {
+          const card = document.createElement("section");
+          card.className = "answer-card";
+
+          const label = document.createElement("label");
+          label.setAttribute("for", `answer-${questionNumber}-${inputIndex}`);
+          label.textContent = inputConfig.label;
+
+          const helper = document.createElement("small");
+          helper.textContent =
+            inputConfig.unit === "x"
+              ? "Enter a number such as 1.5, 2, or 3.2"
+              : "Enter a value between 0 and 100";
+
+          const unit = document.createElement("div");
+          unit.className = "unit";
+          unit.textContent = inputConfig.unit === "x" ? "Multiplier" : inputConfig.unit === "pts" ? "Percentage points" : "Percent";
+
+          const input = document.createElement("input");
+          input.id = `answer-${questionNumber}-${inputIndex}`;
+          input.type = "number";
+          input.inputMode = "decimal";
+          input.step = "0.1";
+          input.min = "0";
+          input.max = inputConfig.unit === "x" ? "5" : "100";
+          input.placeholder = inputConfig.unit === "x" ? "0.0" : "0";
+          input.value = answers[questionNumber][inputIndex];
+          input.addEventListener("input", (event) => {
+            answers[questionNumber][inputIndex] = event.target.value;
+            updateProgress();
+          });
+
+          card.append(label, helper, unit, input);
+          answerGrid.appendChild(card);
+        });
+      }
+
+      function buildResultNav() {
+        resultNav.innerHTML = "";
+
+        questions.forEach((question, index) => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = `result-dot${index === currentResult ? " active" : ""}`;
+          button.textContent = `${index + 1}`;
+          button.setAttribute("aria-label", `Show results for ${question.title}`);
+          button.addEventListener("click", () => {
+            currentResult = index;
+            renderResultCard();
+          });
+          resultNav.appendChild(button);
+        });
+      }
+
+      function renderResultCard() {
+        const question = questions[currentResult];
+        const userAnswers = answers[currentResult].map((value, index) => {
+          if (value === "") {
+            return 0;
+          }
+
+          const parsed = Number(value);
+          const max = question.inputs[index].unit === "x" ? 5 : 100;
+          return clamp(parsed, 0, max);
+        });
+
+        resultTag.textContent = `Result ${currentResult + 1} of ${questions.length}`;
+        resultTitle.textContent = question.title;
+        scaleNote.textContent = `Scale: ${question.scaleLabel}`;
+
+        const differences = userAnswers.map((value, index) => Math.abs(value - question.actual[index]));
+        const totalDifference = differences.reduce((sum, value) => sum + value, 0);
+        const averageDifference = totalDifference / differences.length;
+        const unitLabel = question.inputs[0].unit === "x" ? "units" : question.inputs[0].unit === "pts" ? "percentage points" : "points";
+
+        resultMessage.textContent = `On this question, your estimates were an average of ${averageDifference.toFixed(
+          1
+        )} ${unitLabel} away from the real figures. That gap is part of the message: most people expect much more progress than the data actually shows.`;
+
+        resultMetrics.innerHTML = "";
+        question.inputs.forEach((inputConfig, index) => {
+          const metric = document.createElement("div");
+          metric.className = "metric";
+
+          const label = document.createElement("span");
+          label.textContent = inputConfig.key;
+
+          const value = document.createElement("strong");
+          value.textContent = `You: ${formatValue(userAnswers[index], inputConfig.unit)} | Real: ${formatValue(
+            question.actual[index],
+            inputConfig.unit
+          )}`;
+
+          metric.append(label, value);
+          resultMetrics.appendChild(metric);
+        });
+
+        resultChart.innerHTML = "";
+        question.inputs.forEach((inputConfig, index) => {
+          const row = document.createElement("section");
+          row.className = "chart-row";
+
+          const header = document.createElement("header");
+          const label = document.createElement("span");
+          label.textContent = inputConfig.key;
+          const value = document.createElement("strong");
+          value.textContent = `${formatValue(userAnswers[index], inputConfig.unit)} guessed vs ${formatValue(
+            question.actual[index],
+            inputConfig.unit
+          )} real`;
+          header.append(label, value);
+
+          const guessTrack = document.createElement("div");
+          guessTrack.className = "chart-track";
+          const guessBar = document.createElement("div");
+          guessBar.className = "bar guess";
+          guessTrack.appendChild(guessBar);
+
+          const actualTrack = document.createElement("div");
+          actualTrack.className = "chart-track";
+          const actualBar = document.createElement("div");
+          actualBar.className = "bar actual";
+          actualTrack.appendChild(actualBar);
+
+          const guessLabel = document.createElement("div");
+          guessLabel.className = "scale-note";
+          guessLabel.textContent = "Your estimate";
+
+          const actualLabel = document.createElement("div");
+          actualLabel.className = "scale-note";
+          actualLabel.textContent = "Actual figure";
+
+          row.append(header, guessLabel, guessTrack, actualLabel, actualTrack);
+          resultChart.appendChild(row);
+
+          requestAnimationFrame(() => {
+            guessBar.style.width = `${(userAnswers[index] / question.scaleMax) * 100}%`;
+            actualBar.style.width = `${(question.actual[index] / question.scaleMax) * 100}%`;
+          });
+        });
+
+        [...resultNav.children].forEach((button, index) => {
+          button.classList.toggle("active", index === currentResult);
+        });
+      }
+
+      function updateAverageGap() {
+        const flattened = questions.flatMap((question, questionIndex) =>
+          question.actual.map((actualValue, inputIndex) => {
+            const response = answers[questionIndex][inputIndex];
+            const fallback = response === "" ? 0 : Number(response);
+            return Math.abs(clamp(fallback, 0, question.scaleMax) - actualValue);
+          })
+        );
+
+        const avg = flattened.reduce((sum, value) => sum + value, 0) / flattened.length;
+        averageGap.textContent = avg.toFixed(1);
+      }
+
+      function updateProgress() {
+        const step = steps[currentStep];
+        const questionStepStart = 2;
+        const onQuestion = step.type === "question";
+
+        stageName.textContent = step.name;
+        stageDetail.textContent = step.detail;
+        navNote.textContent = step.note;
+        progressCopy.textContent = `Step ${currentStep + 1} of ${steps.length}`;
+        questionCopy.textContent = `${getCompletedEstimates()} of ${questions.length * 2} estimates completed`;
+        progressBar.style.width = `${((currentStep + 1) / steps.length) * 100}%`;
+
+        backBtn.disabled = currentStep === 0;
+        nextBtn.textContent = currentStep === steps.length - 1 ? "Start Over" : "Next";
+
+        if (onQuestion) {
+          const questionNumber = currentStep - questionStepStart;
+          renderQuestion(questionNumber);
+        }
+
+        if (step.type === "results") {
+          buildResultNav();
+          updateAverageGap();
+          renderResultCard();
+        }
+
+        panels.forEach((panel) => {
+          panel.classList.remove("active");
+        });
+
+        const activePanel =
+          step.type === "question"
+            ? document.querySelector('[data-step-type="question"]')
+            : document.querySelector(`[data-step-type="${step.type}"]`);
+
+        activePanel.classList.add("active");
+      }
+
+      function validateCurrentStep() {
+        if (steps[currentStep].type !== "question") {
+          return true;
+        }
+
+        const questionNumber = currentStep - 2;
+        const missing = answers[questionNumber].some((value) => value === "");
+        if (missing) {
+          window.alert("Please enter both estimates before moving to the next question.");
+          return false;
+        }
+
+        return true;
+      }
+
+      backBtn.addEventListener("click", () => {
+        if (currentStep > 0) {
+          currentStep -= 1;
+          updateProgress();
+        }
+      });
+
+      nextBtn.addEventListener("click", () => {
+        if (currentStep === steps.length - 1) {
+          currentStep = 0;
+          currentResult = 0;
+          updateProgress();
+          return;
+        }
+
+        if (!validateCurrentStep()) {
+          return;
+        }
+
+        currentStep += 1;
+        if (steps[currentStep].type === "results") {
+          currentResult = 0;
+        }
+        updateProgress();
+      });
+
+      updateProgress();
+    </script>
+  </body>
+</html>
