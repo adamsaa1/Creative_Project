@@ -976,7 +976,7 @@
           title: "Black homeownership",
           tag: "Wealth and housing",
           context:
-            "Black homeownership was about 42% in 1970 and about 44% in 2022. That tiny change across half a century matters because homeownership is one of the main ways families build wealth, move into opportunity-rich neighborhoods, and access stronger school systems.",
+            "Estimate how much Black homeownership changed between 1970 and today. This matters because homeownership is one of the main ways families build wealth, move into opportunity-rich neighborhoods, and access stronger school systems.",
           inputs: [
             { label: "What do you think it was in 1970?", key: "1970", unit: "%" },
             { label: "What do you think it is today?", key: "2022", unit: "%" }
@@ -989,7 +989,7 @@
           title: "Home value gap",
           tag: "Family wealth",
           context:
-            "Treasury reports that the average White household's home value is 2.5 times the average Black household's home value today, and that this is the same ratio as in 1970. One of the most important wealth gaps in the country barely moved.",
+            "Estimate the home value gap between White and Black households in 1970 and today. This is one of the clearest ways to see whether one of the country's biggest wealth gaps narrowed or stayed in place.",
           inputs: [
             { label: "How many times higher do you think it was in 1970?", key: "1970", unit: "x" },
             { label: "How many times higher do you think it is today?", key: "Today", unit: "x" }
@@ -1002,7 +1002,7 @@
           title: "Black students in majority-White schools in the South",
           tag: "School integration",
           context:
-            "In the South, the share of Black students in majority-White schools reached about 43% in the 1980s but fell to about 16% by 2021. This is one of the clearest examples of formal desegregation giving way to new patterns of separation.",
+            "Estimate the share of Black students in the South who attended majority-White schools in the 1980s and in 2021. This helps show whether formal desegregation led to lasting integration or gave way to new patterns of separation.",
           inputs: [
             { label: "What do you think the share was in the 1980s?", key: "1980s", unit: "%" },
             { label: "What do you think it was in 2021?", key: "2021", unit: "%" }
@@ -1015,7 +1015,7 @@
           title: "Schools with more than 90% students of color",
           tag: "Concentrated segregation",
           context:
-            "The share of U.S. public schools with more than 90% students of color rose from 7.4% in 1988 to 19.8% in 2021. That rise points to a country where racial concentration in schools deepened rather than disappeared.",
+            "Estimate the share of U.S. public schools with more than 90% students of color in 1988 and in 2021. This question asks you to judge whether racial concentration in schools eased or deepened over time.",
           inputs: [
             { label: "What do you think the share was in 1988?", key: "1988", unit: "%" },
             { label: "What do you think it was in 2021?", key: "2021", unit: "%" }
@@ -1028,7 +1028,7 @@
           title: "California's intensely segregated schools",
           tag: "State-level segregation",
           context:
-            "UCLA reports that California's share of intensely segregated schools rose from 11% in 1988 to 44% in 2021. It is a brutal state-level reminder that segregation did not simply vanish once explicit Jim Crow laws were struck down.",
+            "Estimate California's share of intensely segregated schools in 1988 and in 2021. It is a state-level test of whether segregation faded away once explicit Jim Crow laws were struck down.",
           inputs: [
             { label: "What do you think the share was in 1988?", key: "1988", unit: "%" },
             { label: "What do you think it was in 2021?", key: "2021", unit: "%" }
@@ -1041,7 +1041,7 @@
           title: "White share of the typical Black student's school",
           tag: "Everyday school experience",
           context:
-            "The typical Black student attended a school with 34.7% White students in 1990, but only 24.5% White students in 2021. In other words, everyday classroom exposure became more racially isolated over time.",
+            "Estimate the White share of the typical Black student's school in 1990 and in 2021. This question gets at how everyday classroom experience changed over time.",
           inputs: [
             { label: "What do you think it was in 1990?", key: "1990", unit: "%" },
             { label: "What do you think it was in 2021?", key: "2021", unit: "%" }
@@ -1054,7 +1054,7 @@
           title: "Bachelor's degree attainment gap",
           tag: "Higher education",
           context:
-            "Among 25 to 29 year olds, the White-Black bachelor's attainment gap was 7.3 percentage points in 1970 and 17.2 points in 2022. Even as college attainment rose overall, the racial gap widened substantially.",
+            "Estimate the White-Black bachelor's degree attainment gap among 25 to 29 year olds in 1970 and in 2022. This helps show whether expanding college access also narrowed the racial gap.",
           inputs: [
             { label: "What do you think the gap was in 1970?", key: "1970", unit: "pts" },
             { label: "What do you think the gap was in 2022?", key: "2022", unit: "pts" }
@@ -1119,6 +1119,7 @@
 
       let currentStep = 0;
       let currentResult = 0;
+      let renderedQuestionNumber = null;
 
       const answers = questions.map((question) => question.actual.map(() => ""));
 
@@ -1179,7 +1180,7 @@
           input.value = answers[questionNumber][inputIndex];
           input.addEventListener("input", (event) => {
             answers[questionNumber][inputIndex] = event.target.value;
-            updateProgress();
+            updateProgress({ rerenderQuestion: false });
           });
 
           card.append(label, helper, unit, input);
@@ -1309,7 +1310,7 @@
         averageGap.textContent = avg.toFixed(1);
       }
 
-      function updateProgress() {
+      function updateProgress({ rerenderQuestion = true } = {}) {
         const step = steps[currentStep];
         const questionStepStart = 2;
         const onQuestion = step.type === "question";
@@ -1326,10 +1327,14 @@
 
         if (onQuestion) {
           const questionNumber = currentStep - questionStepStart;
-          renderQuestion(questionNumber);
+          if (rerenderQuestion || renderedQuestionNumber !== questionNumber) {
+            renderQuestion(questionNumber);
+            renderedQuestionNumber = questionNumber;
+          }
         }
 
         if (step.type === "results") {
+          renderedQuestionNumber = null;
           buildResultNav();
           updateAverageGap();
           renderResultCard();
