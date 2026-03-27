@@ -134,7 +134,7 @@
 
       .progress-labels {
         display: flex;
-        justify-content: space-between;
+        justify-content: flex-end;
         align-items: center;
         color: var(--muted);
         font-size: 0.92rem;
@@ -653,6 +653,7 @@
         display: flex;
         gap: 0.8rem;
         align-items: center;
+        flex-wrap: wrap;
       }
 
       button {
@@ -780,7 +781,6 @@
 
       <section class="progress-wrap" aria-label="Experience progress">
         <div class="progress-labels">
-          <span id="progress-copy">Step 1 of 10</span>
           <span id="question-copy">0 of 7 estimates completed</span>
         </div>
         <div class="progress-track">
@@ -964,6 +964,7 @@
           Watch, read, and then make your estimates before you reach the data.
         </div>
         <div class="nav-group">
+          <button class="btn-secondary" id="test-btn" type="button">Test Results</button>
           <button class="btn-secondary" id="back-btn" type="button">Back</button>
           <button class="btn-primary" id="next-btn" type="button">Next</button>
         </div>
@@ -976,10 +977,20 @@
           title: "Black homeownership",
           tag: "Wealth and housing",
           context:
-            "Estimate how much Black homeownership changed between 1970 and today. This matters because homeownership is one of the main ways families build wealth, move into opportunity-rich neighborhoods, and access stronger school systems.",
+            "Enter your estimate for the percent of Black families who owned a home in each year. This matters because homeownership is one of the main ways families build wealth, move into opportunity-rich neighborhoods, and access stronger school systems.",
           inputs: [
-            { label: "What do you think it was in 1970?", key: "1970", unit: "%" },
-            { label: "What do you think it is today?", key: "2022", unit: "%" }
+            {
+              label: "In 1970, what percent of Black families do you think owned their home?",
+              key: "1970",
+              unit: "%",
+              helper: "Enter the percentage of Black families who owned a home in 1970."
+            },
+            {
+              label: "In 2022, what percent of Black families do you think owned their home?",
+              key: "2022",
+              unit: "%",
+              helper: "Enter the percentage of Black families who owned a home in 2022."
+            }
           ],
           actual: [42, 44],
           scaleMax: 100,
@@ -989,10 +1000,20 @@
           title: "Home value gap",
           tag: "Family wealth",
           context:
-            "Estimate the home value gap between White and Black households in 1970 and today. This is one of the clearest ways to see whether one of the country's biggest wealth gaps narrowed or stayed in place.",
+            "Enter your estimate for how many times higher the average White household's home value was than the average Black household's home value in each year.",
           inputs: [
-            { label: "How many times higher do you think it was in 1970?", key: "1970", unit: "x" },
-            { label: "How many times higher do you think it is today?", key: "Today", unit: "x" }
+            {
+              label: "In 1970, how many times higher do you think the average White household's home value was than the average Black household's home value?",
+              key: "1970",
+              unit: "x",
+              helper: "Enter a multiplier, such as 1.5x, 2x, or 3.2x."
+            },
+            {
+              label: "Today, how many times higher do you think the average White household's home value is than the average Black household's home value?",
+              key: "Today",
+              unit: "x",
+              helper: "Enter a multiplier, such as 1.5x, 2x, or 3.2x."
+            }
           ],
           actual: [2.5, 2.5],
           scaleMax: 5,
@@ -1002,10 +1023,20 @@
           title: "Black students in majority-White schools in the South",
           tag: "School integration",
           context:
-            "Estimate the share of Black students in the South who attended majority-White schools in the 1980s and in 2021. This helps show whether formal desegregation led to lasting integration or gave way to new patterns of separation.",
+            "Enter your estimate for the percent of Black students in the South who attended a majority-White school in each year. This helps show whether formal desegregation led to lasting integration or gave way to new patterns of separation.",
           inputs: [
-            { label: "What do you think the share was in the 1980s?", key: "1980s", unit: "%" },
-            { label: "What do you think it was in 2021?", key: "2021", unit: "%" }
+            {
+              label: "In the 1980s, what percent of Black students in the South do you think attended a majority-White school?",
+              key: "1980s",
+              unit: "%",
+              helper: "Enter the percentage of Black students in the South who were in majority-White schools."
+            },
+            {
+              label: "In 2021, what percent of Black students in the South do you think attended a majority-White school?",
+              key: "2021",
+              unit: "%",
+              helper: "Enter the percentage of Black students in the South who were in majority-White schools."
+            }
           ],
           actual: [43, 16],
           scaleMax: 100,
@@ -1015,10 +1046,20 @@
           title: "Schools with more than 90% students of color",
           tag: "Concentrated segregation",
           context:
-            "Estimate the share of U.S. public schools with more than 90% students of color in 1988 and in 2021. This question asks you to judge whether racial concentration in schools eased or deepened over time.",
+            "Enter your estimate for the percent of U.S. public schools where more than 90% of students were students of color in each year. This asks whether racial concentration in schools eased or deepened over time.",
           inputs: [
-            { label: "What do you think the share was in 1988?", key: "1988", unit: "%" },
-            { label: "What do you think it was in 2021?", key: "2021", unit: "%" }
+            {
+              label: "In 1988, what percent of U.S. public schools do you think had student bodies that were more than 90% students of color?",
+              key: "1988",
+              unit: "%",
+              helper: "Enter the percentage of public schools that were more than 90% students of color."
+            },
+            {
+              label: "In 2021, what percent of U.S. public schools do you think had student bodies that were more than 90% students of color?",
+              key: "2021",
+              unit: "%",
+              helper: "Enter the percentage of public schools that were more than 90% students of color."
+            }
           ],
           actual: [7.4, 19.8],
           scaleMax: 100,
@@ -1028,10 +1069,20 @@
           title: "California's intensely segregated schools",
           tag: "State-level segregation",
           context:
-            "Estimate California's share of intensely segregated schools in 1988 and in 2021. It is a state-level test of whether segregation faded away once explicit Jim Crow laws were struck down.",
+            "Enter your estimate for the percent of California schools that were intensely segregated in each year. This is a state-level test of whether segregation faded away once explicit Jim Crow laws were struck down.",
           inputs: [
-            { label: "What do you think the share was in 1988?", key: "1988", unit: "%" },
-            { label: "What do you think it was in 2021?", key: "2021", unit: "%" }
+            {
+              label: "In 1988, what percent of California schools do you think were intensely segregated?",
+              key: "1988",
+              unit: "%",
+              helper: "Enter the percentage of California schools that were intensely segregated."
+            },
+            {
+              label: "In 2021, what percent of California schools do you think were intensely segregated?",
+              key: "2021",
+              unit: "%",
+              helper: "Enter the percentage of California schools that were intensely segregated."
+            }
           ],
           actual: [11, 44],
           scaleMax: 100,
@@ -1041,10 +1092,20 @@
           title: "White share of the typical Black student's school",
           tag: "Everyday school experience",
           context:
-            "Estimate the White share of the typical Black student's school in 1990 and in 2021. This question gets at how everyday classroom experience changed over time.",
+            "Enter your estimate for what percent of students at the typical Black student's school were White in each year. This gets at how everyday classroom experience changed over time.",
           inputs: [
-            { label: "What do you think it was in 1990?", key: "1990", unit: "%" },
-            { label: "What do you think it was in 2021?", key: "2021", unit: "%" }
+            {
+              label: "In 1990, what percent of students at the typical Black student's school do you think were White?",
+              key: "1990",
+              unit: "%",
+              helper: "Enter the percentage of students who were White at the school attended by the typical Black student."
+            },
+            {
+              label: "In 2021, what percent of students at the typical Black student's school do you think were White?",
+              key: "2021",
+              unit: "%",
+              helper: "Enter the percentage of students who were White at the school attended by the typical Black student."
+            }
           ],
           actual: [34.7, 24.5],
           scaleMax: 100,
@@ -1054,10 +1115,20 @@
           title: "Bachelor's degree attainment gap",
           tag: "Higher education",
           context:
-            "Estimate the White-Black bachelor's degree attainment gap among 25 to 29 year olds in 1970 and in 2022. This helps show whether expanding college access also narrowed the racial gap.",
+            "Enter your estimate for the size of the White-Black bachelor's degree attainment gap among 25- to 29-year-olds in each year. This helps show whether expanding college access also narrowed the racial gap.",
           inputs: [
-            { label: "What do you think the gap was in 1970?", key: "1970", unit: "pts" },
-            { label: "What do you think the gap was in 2022?", key: "2022", unit: "pts" }
+            {
+              label: "In 1970, how many percentage points higher do you think bachelor's degree attainment was for White 25- to 29-year-olds than for Black 25- to 29-year-olds?",
+              key: "1970",
+              unit: "pts",
+              helper: "Enter the gap in percentage points, not the total percent for either group."
+            },
+            {
+              label: "In 2022, how many percentage points higher do you think bachelor's degree attainment was for White 25- to 29-year-olds than for Black 25- to 29-year-olds?",
+              key: "2022",
+              unit: "pts",
+              helper: "Enter the gap in percentage points, not the total percent for either group."
+            }
           ],
           actual: [7.3, 17.2],
           scaleMax: 100,
@@ -1095,10 +1166,10 @@
       const panels = document.querySelectorAll(".panel");
       const stageName = document.getElementById("stage-name");
       const stageDetail = document.getElementById("stage-detail");
-      const progressCopy = document.getElementById("progress-copy");
       const questionCopy = document.getElementById("question-copy");
       const progressBar = document.getElementById("progress-bar");
       const navNote = document.getElementById("nav-note");
+      const testBtn = document.getElementById("test-btn");
       const backBtn = document.getElementById("back-btn");
       const nextBtn = document.getElementById("next-btn");
 
@@ -1143,6 +1214,20 @@
         return answers.flat().filter((value) => value !== "").length;
       }
 
+      function getRandomEstimate(question, unit) {
+        const max = unit === "x" ? 5 : question.scaleMax;
+        const value = Math.random() * max;
+        return unit === "x" || !Number.isInteger(max) ? value.toFixed(1) : Math.round(value).toString();
+      }
+
+      function autofillRandomAnswers() {
+        questions.forEach((question, questionIndex) => {
+          question.inputs.forEach((inputConfig, inputIndex) => {
+            answers[questionIndex][inputIndex] = getRandomEstimate(question, inputConfig.unit);
+          });
+        });
+      }
+
       function renderQuestion(questionNumber) {
         const question = questions[questionNumber];
         questionTitle.textContent = question.title;
@@ -1161,9 +1246,10 @@
 
           const helper = document.createElement("small");
           helper.textContent =
-            inputConfig.unit === "x"
+            inputConfig.helper ||
+            (inputConfig.unit === "x"
               ? "Enter a number such as 1.5, 2, or 3.2"
-              : "Enter a value between 0 and 100";
+              : "Enter a value between 0 and 100");
 
           const unit = document.createElement("div");
           unit.className = "unit";
@@ -1318,7 +1404,6 @@
         stageName.textContent = step.name;
         stageDetail.textContent = step.detail;
         navNote.textContent = step.note;
-        progressCopy.textContent = `Step ${currentStep + 1} of ${steps.length}`;
         questionCopy.textContent = `${getCompletedEstimates()} of ${questions.length * 2} estimates completed`;
         progressBar.style.width = `${((currentStep + 1) / steps.length) * 100}%`;
 
@@ -1372,6 +1457,13 @@
           currentStep -= 1;
           updateProgress();
         }
+      });
+
+      testBtn.addEventListener("click", () => {
+        autofillRandomAnswers();
+        currentStep = steps.length - 1;
+        currentResult = 0;
+        updateProgress();
       });
 
       nextBtn.addEventListener("click", () => {
