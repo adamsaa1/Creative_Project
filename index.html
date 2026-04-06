@@ -232,7 +232,8 @@
       .intro-card {
         display: flex;
         flex-direction: column;
-        justify-content: space-between;
+        justify-content: flex-start;
+        gap: 1.5rem;
         background:
           linear-gradient(145deg, rgba(28, 74, 90, 0.12), rgba(255, 250, 242, 0.86)),
           var(--surface);
@@ -257,39 +258,12 @@
 
       .pull-quote {
         margin-top: 1.5rem;
-        padding: 1.1rem 1.2rem;
+        padding: 1.35rem 1.4rem;
         border-left: 3px solid var(--accent);
         background: rgba(255, 248, 240, 0.72);
         color: #3d3126;
-        line-height: 1.65;
-      }
-
-      .stats-strip {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 0.85rem;
-        margin-top: 1.5rem;
-      }
-
-      .mini-stat {
-        padding: 1rem;
-        border-radius: var(--radius-md);
-        background: rgba(255, 252, 248, 0.92);
-        border: 1px solid rgba(44, 35, 24, 0.08);
-      }
-
-      .mini-stat strong {
-        display: block;
-        font-size: 1.4rem;
-        font-family: Baskerville, "Times New Roman", serif;
-      }
-
-      .mini-stat span {
-        display: block;
-        margin-top: 0.3rem;
-        color: var(--muted);
-        line-height: 1.45;
-        font-size: 0.92rem;
+        line-height: 1.55;
+        font-size: clamp(1.25rem, 2vw, 1.75rem);
       }
 
       .video-card {
@@ -469,13 +443,15 @@
       }
 
       .results-layout {
-        grid-template-columns: 0.9fr 1.1fr;
+        grid-template-columns: minmax(130px, 180px) 1fr;
         align-items: start;
       }
 
       .summary-card {
         position: sticky;
         top: 20px;
+        display: grid;
+        align-content: start;
         background:
           linear-gradient(160deg, rgba(28, 74, 90, 0.12), rgba(255, 250, 242, 0.92));
       }
@@ -483,26 +459,6 @@
       .summary-card p {
         color: var(--muted);
         line-height: 1.7;
-      }
-
-      .score-pill {
-        display: inline-flex;
-        align-items: baseline;
-        gap: 0.5rem;
-        padding: 0.8rem 1rem;
-        border-radius: 999px;
-        background: rgba(255, 252, 247, 0.96);
-        border: 1px solid rgba(44, 35, 24, 0.08);
-      }
-
-      .score-pill strong {
-        font-family: Baskerville, "Times New Roman", serif;
-        font-size: 2rem;
-        line-height: 1;
-      }
-
-      .score-pill span {
-        color: var(--muted);
       }
 
       .result-card {
@@ -618,18 +574,22 @@
       }
 
       .result-nav {
-        display: flex;
-        gap: 0.6rem;
-        flex-wrap: wrap;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.8rem;
       }
 
       .result-dot {
         border: 0;
-        border-radius: 999px;
-        padding: 0.6rem 0.85rem;
+        border-radius: 20px;
+        min-height: 84px;
+        padding: 0.5rem;
         background: rgba(26, 22, 18, 0.08);
         color: var(--muted);
-        font: inherit;
+        font-family: Baskerville, "Times New Roman", serif;
+        font-size: 2rem;
+        font-weight: 600;
+        line-height: 1;
         cursor: pointer;
         transition: background 180ms ease, color 180ms ease, transform 180ms ease;
       }
@@ -720,9 +680,12 @@
           grid-template-columns: 1fr;
         }
 
-        .stats-strip,
         .result-metrics {
           grid-template-columns: 1fr;
+        }
+
+        .result-nav {
+          grid-template-columns: repeat(4, minmax(0, 1fr));
         }
 
         .summary-card {
@@ -774,7 +737,6 @@
           <span class="dot" aria-hidden="true"></span>
           <div>
             <strong id="stage-name">Opening</strong>
-            <span id="stage-detail">Watch the introduction and begin the experience</span>
           </div>
         </div>
       </header>
@@ -796,27 +758,13 @@
                 <span class="section-tag">Part I · The Fight for Freedom</span>
                 <h2>Begin with the story before the numbers.</h2>
                 <p class="lede">
-                  This project starts with history, not trivia. Watch the video, then continue into the
-                  policies that limited opportunity for Black Americans long after slavery ended.
+                  Watch the video to learn about the legal victories of the Civil Rights movement, then
+                  continue into the policies that limited opportunity for Black Americans long after slavery
+                  ended.
                 </p>
                 <div class="pull-quote">
                   The central question of this site is not only what the law once required, but what
                   inequality kept doing after explicit legal segregation was challenged.
-                </div>
-              </div>
-
-              <div class="stats-strip">
-                <div class="mini-stat">
-                  <strong>1 video</strong>
-                  <span>Context for the civil rights struggle and the pursuit of freedom</span>
-                </div>
-                <div class="mini-stat">
-                  <strong>3 systems</strong>
-                  <span>Historic mechanisms that constrained education and power</span>
-                </div>
-                <div class="mini-stat">
-                  <strong>7 prompts</strong>
-                  <span>Your estimates versus the real outcomes across generations</span>
                 </div>
               </div>
             </div>
@@ -846,10 +794,6 @@
               <p>
                 Taken together, they help explain why unequal education could survive even when the language of
                 equality had entered American law.
-              </p>
-              <p class="footnote">
-                The next section asks visitors to estimate long-run outcomes. The goal is to make visible how
-                much inequality endured, even after many people assume the biggest barriers had already fallen.
               </p>
             </div>
 
@@ -916,25 +860,7 @@
         <article class="panel" data-step-type="results" aria-label="Results">
           <div class="results-layout">
             <aside class="summary-card">
-              <span class="section-tag">Part IV · What The Data Shows</span>
-              <h2>Your estimates next to reality.</h2>
-              <p>
-                These cards compare your guesses with the actual figures. The point is not to score a test. It
-                is to show how easy it is to underestimate how durable racial inequality has been over time.
-              </p>
-              <div class="score-pill">
-                <strong id="average-gap">0.0</strong>
-                <span>average absolute error across all prompts</span>
-              </div>
-              <p class="footnote">
-                Percentage-based questions are charted on a 0 to 100 scale. The home value ratio uses a 0 to 5
-                times scale because it is measured as a multiplier rather than a percentage.
-              </p>
-              <p class="footnote">
-                Source trail for the figures used here: Treasury, UCLA Civil Rights Project, National Archives,
-                and the historical education and segregation figures you provided for the experience.
-              </p>
-              <div class="result-nav" id="result-nav"></div>
+              <div class="result-nav" id="result-nav" aria-label="Select a question"></div>
             </aside>
 
             <section class="result-card" aria-live="polite">
@@ -961,7 +887,7 @@
 
       <nav class="nav">
         <div class="nav-note" id="nav-note">
-          Watch, read, and then make your estimates before you reach the data.
+          Move through the sections and enter your estimates before you reach the data.
         </div>
         <div class="nav-group">
           <button class="btn-secondary" id="test-btn" type="button">Test Results</button>
@@ -1092,19 +1018,21 @@
           title: "White share of the typical Black student's school",
           tag: "Everyday school experience",
           context:
-            "Enter your estimate for what percent of students at the typical Black student's school were White in each year. This gets at how everyday classroom experience changed over time.",
+            "Enter your estimate for what percent of students at the school attended by the average Black student were White in each year. In other words, this is not one specific school or only majority-Black schools. It means the school the typical Black student actually experienced.",
           inputs: [
             {
               label: "In 1990, what percent of students at the typical Black student's school do you think were White?",
               key: "1990",
               unit: "%",
-              helper: "Enter the percentage of students who were White at the school attended by the typical Black student."
+              helper:
+                "Here, the typical Black student's school means the school attended by the average Black student, not a single representative school."
             },
             {
               label: "In 2021, what percent of students at the typical Black student's school do you think were White?",
               key: "2021",
               unit: "%",
-              helper: "Enter the percentage of students who were White at the school attended by the typical Black student."
+              helper:
+                "Here, the typical Black student's school means the school attended by the average Black student, not a single representative school."
             }
           ],
           actual: [34.7, 24.5],
@@ -1140,32 +1068,27 @@
         {
           type: "intro",
           name: "Opening",
-          detail: "Watch the introduction and begin the experience",
-          note: "Watch, read, and then make your estimates before you reach the data."
+          note: "Watch the video, review the systems, and then make your estimates."
         },
         {
           type: "history",
           name: "Historical Context",
-          detail: "See the systems that blocked Black educational opportunity",
-          note: "The next section asks visitors to estimate long-run outcomes for themselves."
+          note: "Continue when you're ready to make your estimates."
         },
         ...questions.map((question, index) => ({
           type: "question",
           name: `Question ${index + 1}`,
-          detail: question.title,
           note: "Enter your best estimate for each year before moving on."
         })),
         {
           type: "results",
           name: "Results",
-          detail: "Compare your estimates to the historical record",
           note: "Use the result buttons to move through each question again."
         }
       ];
 
       const panels = document.querySelectorAll(".panel");
       const stageName = document.getElementById("stage-name");
-      const stageDetail = document.getElementById("stage-detail");
       const questionCopy = document.getElementById("question-copy");
       const progressBar = document.getElementById("progress-bar");
       const navNote = document.getElementById("nav-note");
@@ -1179,7 +1102,6 @@
       const questionTheme = document.getElementById("question-theme");
       const answerGrid = document.getElementById("answer-grid");
 
-      const averageGap = document.getElementById("average-gap");
       const resultNav = document.getElementById("result-nav");
       const resultTag = document.getElementById("result-tag");
       const resultTitle = document.getElementById("result-title");
@@ -1307,14 +1229,8 @@
         resultTitle.textContent = question.title;
         scaleNote.textContent = `Scale: ${question.scaleLabel}`;
 
-        const differences = userAnswers.map((value, index) => Math.abs(value - question.actual[index]));
-        const totalDifference = differences.reduce((sum, value) => sum + value, 0);
-        const averageDifference = totalDifference / differences.length;
-        const unitLabel = question.inputs[0].unit === "x" ? "units" : question.inputs[0].unit === "pts" ? "percentage points" : "points";
-
-        resultMessage.textContent = `On this question, your estimates were an average of ${averageDifference.toFixed(
-          1
-        )} ${unitLabel} away from the real figures. That gap is part of the message: most people expect much more progress than the data actually shows.`;
+        resultMessage.textContent =
+          "These comparisons place your estimate beside the actual figure for each year so you can see how expectations about progress compare with the historical record.";
 
         resultMetrics.innerHTML = "";
         question.inputs.forEach((inputConfig, index) => {
@@ -1383,26 +1299,12 @@
         });
       }
 
-      function updateAverageGap() {
-        const flattened = questions.flatMap((question, questionIndex) =>
-          question.actual.map((actualValue, inputIndex) => {
-            const response = answers[questionIndex][inputIndex];
-            const fallback = response === "" ? 0 : Number(response);
-            return Math.abs(clamp(fallback, 0, question.scaleMax) - actualValue);
-          })
-        );
-
-        const avg = flattened.reduce((sum, value) => sum + value, 0) / flattened.length;
-        averageGap.textContent = avg.toFixed(1);
-      }
-
       function updateProgress({ rerenderQuestion = true } = {}) {
         const step = steps[currentStep];
         const questionStepStart = 2;
         const onQuestion = step.type === "question";
 
         stageName.textContent = step.name;
-        stageDetail.textContent = step.detail;
         navNote.textContent = step.note;
         questionCopy.textContent = `${getCompletedEstimates()} of ${questions.length * 2} estimates completed`;
         progressBar.style.width = `${((currentStep + 1) / steps.length) * 100}%`;
@@ -1421,7 +1323,6 @@
         if (step.type === "results") {
           renderedQuestionNumber = null;
           buildResultNav();
-          updateAverageGap();
           renderResultCard();
         }
 
