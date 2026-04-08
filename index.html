@@ -890,7 +890,6 @@
           Move through the sections and enter your estimates before you reach the data.
         </div>
         <div class="nav-group">
-          <button class="btn-secondary" id="test-btn" type="button">Test Results</button>
           <button class="btn-secondary" id="back-btn" type="button">Back</button>
           <button class="btn-primary" id="next-btn" type="button">Next</button>
         </div>
@@ -903,7 +902,7 @@
           title: "Black homeownership",
           tag: "Wealth and housing",
           context:
-            "Enter your estimate for the percent of Black families who owned a home in each year. This matters because homeownership is one of the main ways families build wealth, move into opportunity-rich neighborhoods, and access stronger school systems.",
+            "Enter your estimate for the percent of Black families who owned a home in each year. This matters because homeownership is one of the main ways families build wealth, access oportunity, and build strong school systems.",
           inputs: [
             {
               label: "In 1970, what percent of Black families do you think owned their home?",
@@ -1092,7 +1091,6 @@
       const questionCopy = document.getElementById("question-copy");
       const progressBar = document.getElementById("progress-bar");
       const navNote = document.getElementById("nav-note");
-      const testBtn = document.getElementById("test-btn");
       const backBtn = document.getElementById("back-btn");
       const nextBtn = document.getElementById("next-btn");
 
@@ -1134,20 +1132,6 @@
 
       function getCompletedEstimates() {
         return answers.flat().filter((value) => value !== "").length;
-      }
-
-      function getRandomEstimate(question, unit) {
-        const max = unit === "x" ? 5 : question.scaleMax;
-        const value = Math.random() * max;
-        return unit === "x" || !Number.isInteger(max) ? value.toFixed(1) : Math.round(value).toString();
-      }
-
-      function autofillRandomAnswers() {
-        questions.forEach((question, questionIndex) => {
-          question.inputs.forEach((inputConfig, inputIndex) => {
-            answers[questionIndex][inputIndex] = getRandomEstimate(question, inputConfig.unit);
-          });
-        });
       }
 
       function renderQuestion(questionNumber) {
@@ -1358,13 +1342,6 @@
           currentStep -= 1;
           updateProgress();
         }
-      });
-
-      testBtn.addEventListener("click", () => {
-        autofillRandomAnswers();
-        currentStep = steps.length - 1;
-        currentResult = 0;
-        updateProgress();
       });
 
       nextBtn.addEventListener("click", () => {
